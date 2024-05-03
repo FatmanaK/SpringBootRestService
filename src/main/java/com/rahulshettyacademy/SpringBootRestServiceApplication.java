@@ -7,7 +7,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class SpringBootRestServiceApplication {
 
 	public static void main(String[] args) {
+
 		SpringApplication.run(SpringBootRestServiceApplication.class, args);
+
 	}
-  //start for spring
+
 }
