@@ -1,51 +1,106 @@
 package com.learningspring.controller;
 
 
+import com.learningspring.repository.LibraryRepository;
 import com.learningspring.service.LibraryService;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.logging.Logger;
 
 import static java.time.ZoneOffset.buildId;
 
 @RestController
 public class LibraryController {
 
-    @Autowired
-    LibraryRepository repository;
+    @RestController
+    public class LibraryController {
 
-    @Autowired
-    LibraryService service;
+        @Autowired
+        LibraryRepository repository;
 
-    @PostMapping("/addBook")
-    public ResponseEntity addBookImplementation (@RequestBody Library library){
+        @Autowired
+        LibraryService libraryService;
 
-        String id=buildId(library.getIsbn()+library.getAisle());
-        if(!LibraryService.checkBookAlreadyExist(id)
-        {
-            //checkBookAlreadyExist();
+        private static final Logger logger = LoggerFactory.getLogger(LibraryController.class);
+
+        @PostMapping("/addBook")
+        public ResponseEntity addBookImplementation(@RequestBody Library library) {
+            String id = libraryService.buildId(library.getIsbn(), library.getAisle());//dependenyMock
             AddResponse ad = new AddResponse();
 
-            library.setId(id);
-            // library.setId(library.getIsbn()+library.getAisle());
-            repository.save(library);
+            if (!libraryService.checkBookAlreadyExist(id))//mock
+            {
+                logger.info("Book do not exist so creating one");
+                library.setId(id);
+                repository.save(library);//mock
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("unique", id);
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("unique", id);
-            ad.setMsg("Success book is added");
-            ad.setId(library.getIsbn() + library.getAisle());
-            // return ad;
-            return new ResponseEntity<AddResponse>(ad, headers, HttpStatus.CREATED);
-        }
-        else{
-            //write
+                ad.setMsg("Success Book is Added");
+                ad.setId(id);
+                //return ad;
+                return new ResponseEntity<AddResponse>(ad, headers, HttpStatus.CREATED);
+            } else {
+                logger.info("Book  exist so skipping creation");
+                ad.setMsg("Book already exist");
+                ad.setId(id);
+                return new ResponseEntity<AddResponse>(ad, HttpStatus.ACCEPTED);
+            }
+            //write the code to tell book already exist
+
         }
 
+        @GetMapping("/getBooks/{id}")
+        public Library getBookById(@PathVariable(value = "id") String id) {
+            try {
+                Library lib = repository.findById(id).get();
+                return lib;
+            } catch (Exception e) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            }
+        }
+
+        @GetMapping("getBooks/author")
+        public List<Library> getBookByAuthorName(@RequestParam(value = "authorname") String authorname) {
+            return repository.findAllByAuthor(authorname);
+        }
+
+        @PutMapping("/updateBook/{id}")
+        public ResponseEntity<Library> updateBook(@PathVariable(value = "id") String id, @RequestBody Library library) {
+            //	Library existingBook = repository.findById(id).get();//mock
+            Library existingBook = libraryService.getBookById(id);
+
+            existingBook.setAisle(library.getAisle());//mock
+            existingBook.setAuthor(library.getAuthor());
+            existingBook.setBook_name(library.getBook_name());
+            repository.save(existingBook);//
+            //
+            return new ResponseEntity<Library>(existingBook, HttpStatus.OK);
+        }
+
+        @DeleteMapping("/deleteBook")
+        public ResponseEntity<String> deleteBookById(@RequestBody Library library) {
+            //	Library libdelete =repository.findById(library.getId()).get();
+            Library libdelete = libraryService.getBookById(library.getId());//mock
+            repository.delete(libdelete);
+
+            logger.info("Book  is deleted ");
+            return new ResponseEntity<>("Book is deleted", HttpStatus.CREATED);
+
+        }
+
+        @GetMapping("/getBooks")
+        public List<Library> getBooks() {
+            return repository.findAll();
+        }
 
 
     }
+
 }
