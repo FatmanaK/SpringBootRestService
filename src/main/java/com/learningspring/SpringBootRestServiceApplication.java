@@ -8,10 +8,12 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-@SpringBootApplication
-public class SpringBootRestServiceApplication{ //implements CommandLineRunner {
+import java.util.List;
 
-	@Autowired
+@SpringBootApplication
+public class SpringBootRestServiceApplication{
+
+	@Autowired(required=true)
 	LibraryRepository repository;
 	public static void main(String[] args) {
 
@@ -19,8 +21,8 @@ public class SpringBootRestServiceApplication{ //implements CommandLineRunner {
 
 	}
 //burayi sql database e query olmadan baglanmak icin yazdik.
-
-	//@Override
+//
+//	@Override
 //	public void run(String[] args)
 //	{
 //		Library lib= repository.findById("fdsefr343").get();
