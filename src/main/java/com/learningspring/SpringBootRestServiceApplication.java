@@ -1,24 +1,18 @@
 package com.learningspring;
 
-import com.learningspring.controller.Library;
-import com.learningspring.repository.LibraryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import com.learningspring.repository.LibraryRepository;
 
-import java.util.List;
 
 @SpringBootApplication
 public class SpringBootRestServiceApplication{
 
-	@Autowired(required=true)
+	@Autowired
 	LibraryRepository repository;
 	public static void main(String[] args) {
-
 		SpringApplication.run(SpringBootRestServiceApplication.class, args);
-
 	}
 //burayi sql database e query olmadan baglanmak icin yazdik.
 //
