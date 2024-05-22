@@ -13,7 +13,7 @@ public class LibraryRepositoryImpl implements LibraryRepositoryCustom{
 
     @Override
     public List<Library> findAllByAuthor(String authorName) {
-        List<Library> bookswithAuthor = new ArrayList<Library>();
+        List<Library>bookswithAuthor = new ArrayList<Library>();
         // TODO Auto-generated method stub
         List<Library>books =repository.findAll();
         for(Library item : books)
@@ -30,4 +30,3 @@ public class LibraryRepositoryImpl implements LibraryRepositoryCustom{
 
 
 }
-
